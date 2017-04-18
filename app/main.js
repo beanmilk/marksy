@@ -2,7 +2,7 @@ import './prism.css'
 import './prism.js'
 import React from 'react'
 import {render} from 'react-dom'
-import marksy from 'marksy'
+import marksy from '../lib/index'
 
 const compile = marksy({
   components: {
@@ -18,7 +18,7 @@ const compile = marksy({
   }
 })
 
-const demo = `
+let demo = `
 # Some blog title
 
 Just need to show you some code first:
@@ -29,6 +29,15 @@ ${'```js \nconst foo = "bar"\n```'}
   <Col>Need to tell you something over here</Col>
   <Col>And over here</Col>
 </Row>
+
+- Colors
+  - Red
+  - Blue
+- Shape
+  - Triangle
+  - Rectangle
+- NonIssue
+- NonIssue2
 `
 
 class App extends React.Component {
@@ -39,6 +48,7 @@ class App extends React.Component {
     };
   }
   onTextareaChange (event) {
+    demo = event.target.value;
     this.setState({
       tree: compile(event.target.value).tree
     });

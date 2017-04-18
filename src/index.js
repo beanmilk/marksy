@@ -28,7 +28,6 @@ export function marksy (options = {}) {
         }
       }
     });
-
     return content;
   }
 
@@ -72,6 +71,7 @@ export function marksy (options = {}) {
         const code = transform(html, {
           presets: ['react']
         }).code;
+
         const components = Object.keys(options.components).map(function (key) {
           return options.components[key];
         });
@@ -120,9 +120,22 @@ export function marksy (options = {}) {
   renderer.list = function (body, ordered) {
     var id = inlineIds++;
     inlines[id] = React.createElement(ordered ? options.ol || 'ol' : options.ul || 'ul', {key: keys++}, createBlockContent(body));
+
+    (inlines[id].props.children).map(function(item) {
+      if (item && (item.type === 'li' || item.type === 'ul')) {
+        if (item.props && item.props.children) {
+          item.props.children.map(function(inlineItem) {
+            if (inlineItem) {
+              result = result.filter(function (i) {
+                return i.key !== inlineItem.key;
+              });
+            }
+          });
+        }
+      }
+    });
     result.push(inlines[id]);
     return '{{' + id + '}}';
-
   };
 
   renderer.listitem = function (text) {
