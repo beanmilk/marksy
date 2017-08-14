@@ -22,6 +22,7 @@ export function marksy (options = {}) {
   const renderer = createRenderer(tracker, options, {
     html (html) {
       try {
+        const elementId = tracker.nextElementId++;
         const code = transform(html, {
           presets: ['react']
         }).code;
@@ -34,7 +35,11 @@ export function marksy (options = {}) {
           return options.createElement(tag, componentProps, children);
         }};
 
-        tracker.tree.push(new Function('React', ...Object.keys(options.components), `return ${code}`)(mockedReact, ...components) || null);
+        tracker.elements[elementId] = new Function('React', ...Object.keys(options.components), `return ${code}`)(mockedReact, ...components) || null;
+
+        tracker.tree.push(tracker.elements[elementId]);
+
+        return `{{${elementId}}}`;
       } catch (e) {}
     },
     code (code, language) {
